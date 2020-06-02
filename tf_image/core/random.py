@@ -1,10 +1,5 @@
 import tensorflow as tf
 
-from tensorflow.python.framework import ops
-from tensorflow.python.ops import math_ops
-from tensorflow.python.ops import control_flow_ops
-from tensorflow.python.ops import random_ops
-
 
 @tf.function
 def random_choice(x, size, axis=0):
@@ -16,10 +11,18 @@ def random_choice(x, size, axis=0):
 
 
 @tf.function
-def random_function(image, function, prob, seed, **kwargs):
-    with ops.name_scope(None, "random_" + function.__name__, [image]) as scope:
-        uniform_random = random_ops.random_uniform([], 0, 1.0, seed=seed)
-        image = ops.convert_to_tensor(image, name="image")
-        mirror_cond = math_ops.less(uniform_random, prob)
-        result = control_flow_ops.cond(mirror_cond, lambda: function(image, **kwargs), lambda: image, name=scope)
+def random_function(image, function, prob, seed=None, **kwargs):
+    with tf.name_scope("random_" + function.__name__):
+        uniform_random = tf.random.uniform([], 0, 1.0, seed=seed)
+        mirror_cond = tf.math.less(uniform_random, prob)
+        result = tf.cond(mirror_cond, lambda: function(image, **kwargs), lambda: image)
+    return result
+
+
+@tf.function
+def random_function_bboxes(image, bboxes, function, prob, seed=None, **kwargs):
+    with tf.name_scope("random_" + function.__name__):
+        uniform_random = tf.random.uniform([], 0, 1.0, seed=seed)
+        mirror_cond = tf.math.less(uniform_random, prob)
+        result = tf.cond(mirror_cond, lambda: function(image, bboxes, **kwargs), lambda: (image, bboxes))
     return result
