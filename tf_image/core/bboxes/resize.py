@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 from tf_image.core.convert_type_decorator import convert_type
-from tf_image.core.ops import random_resize, random_resize_pad
+from tf_image.core.resize import random_resize_pad, random_resize
 
 
 @tf.function
@@ -60,7 +60,6 @@ def random_aspect_ratio_deformation(image, bboxes, max_squeeze=0.7, max_stretch=
     :param max_squeeze: Maximum relative coefficient for squeezing an image size. (0.0 to 1.0)
     :param max_stretch: Maximum relative coefficient for stretching an image size. (0.0 to 1.0)
     :param unify_dims: overwrite max_squeeze of long side and max_stretch of short size to be able to fill a square
-    :param prob: Probability that we will actually clip the image. (From 0.0 = never to 1.0 always.)
     :return: (augmented image, updated bounding boxes)
     """
     with tf.name_scope("random_aspect_ratio_deformation"):

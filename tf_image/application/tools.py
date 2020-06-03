@@ -1,18 +1,18 @@
 import tensorflow as tf
 
-from tf_image.core import random_function, rgb_shift, channel_swap, grayscale, channel_drop
-
 from tf_image.application.augmentation_config import ColorAugmentation, AugmentationConfig, AspectRatioAugmentation
-from tf_image.core.bboxes.clip import clip_random_with_bboxes, clip_random
+from tf_image.core.bboxes.clip import clip_random_with_bboxes
 from tf_image.core.bboxes.erase import multiple_erase, calculate_bboxes_max_erase_area
 from tf_image.core.bboxes.flip import flip_left_right, flip_up_down
 from tf_image.core.bboxes.resize import random_aspect_ratio_deformation, random_pad_to_square
-from tf_image.core.bboxes.rotate import random_rotate, rot90
+from tf_image.core.bboxes.rotate import rot90
+from tf_image.core.clip import clip_random
+from tf_image.core.colors import channel_drop, grayscale, channel_swap, rgb_shift
 from tf_image.core.convert_type_decorator import convert_type
-from tf_image.core.random import random_function_bboxes
+from tf_image.core.random import random_function
 
 
-def apply_random_order_augmentations(image, augmentation_config: AugmentationConfig, bboxes=None):
+def random_augmentations(image, augmentation_config: AugmentationConfig, bboxes=None):
     """
     Apply augmentations in random order.
 
@@ -28,7 +28,7 @@ def apply_random_order_augmentations(image, augmentation_config: AugmentationCon
         bboxes = tf.reshape([], (0, 4))
 
     # convert_dtype decorator needs this special argument order (converting now saves us converting in each operation)
-    image, bboxes = _apply_random_order_augmentations(image, bboxes, augmentation_config)
+    image, bboxes = _random_augmentations(image, bboxes, augmentation_config)
 
     if has_bboxes:
         return image, bboxes
@@ -38,7 +38,7 @@ def apply_random_order_augmentations(image, augmentation_config: AugmentationCon
 
 @tf.function
 @convert_type
-def _apply_random_order_augmentations(image, bboxes, augmentation_config: AugmentationConfig):
+def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig):
     @tf.function
     def apply(idx, image, bboxes):
         # List of tuples (precondition, augmentation), augmentation will be applied only if precondition is True.
@@ -177,3 +177,8 @@ def _apply_random_order_augmentations(image, bboxes, augmentation_config: Augmen
     )
 
     return image, bboxes
+
+
+import tensorflow as tf
+from tf_image.core.bboxes.rotate import random_rotate
+from tf_image.core.random import random_function_bboxes

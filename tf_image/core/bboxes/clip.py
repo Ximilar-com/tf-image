@@ -1,7 +1,7 @@
 import tensorflow as tf
 
+from tf_image.core.clip import clip_random
 from tf_image.core.convert_type_decorator import convert_type
-from tf_image.core.ops import clip_random
 
 
 @tf.function

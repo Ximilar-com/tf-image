@@ -33,8 +33,6 @@ class AspectRatioAugmentation(IntEnum):
 class AugmentationConfig(object):
     """
     Specifies which augmentations should be applied.
-
-     WARNING: this is just a testing class and it is likely to change.
     """
 
     def __init__(self):
