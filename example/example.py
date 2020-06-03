@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 
 from tf_image.application.augmentation_config import AugmentationConfig
-from tf_image.application.tools import apply_random_order_augmentations
+from tf_image.application.tools import random_augmentations
 
 #
 # Loads an images from images/ximilar-similar.jpg, create some bounding boxes and augment
@@ -19,12 +19,12 @@ bboxes = np.array([[262.0, 135.0, 504.0, 371.0], [285.0, 446.0, 494.0, 644.0], [
 bboxes /= [image.shape[0], image.shape[1], image.shape[0], image.shape[1]]
 
 for i in range(3):
-    image_augmented = apply_random_order_augmentations(np.copy(image), config)
+    image_augmented = random_augmentations(np.copy(image), config)
     image_augmented = Image.fromarray(image_augmented.numpy())
     image_augmented.save(f"images/results/ximilar-similar_{i + 1}.png")
 
 for i in range(3):
-    image_augmented, bboxes_augmented = apply_random_order_augmentations(np.copy(image), config, bboxes=bboxes)
+    image_augmented, bboxes_augmented = random_augmentations(np.copy(image), config, bboxes=bboxes)
     image_augmented = tf.image.draw_bounding_boxes([image_augmented], [bboxes_augmented], [(0, 0, 255)] * len(bboxes))
     image_augmented = tf.cast(image_augmented[0], dtype=tf.uint8).numpy()
     image_augmented = Image.fromarray(image_augmented)
