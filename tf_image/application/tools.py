@@ -47,14 +47,14 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
                 lambda: (
                     (
-                        random_function(image, rgb_shift, 0.2, **{"r_shift": 0.15, "g_shift": 0.15, "b_shift": 0.15}),
+                        random_function(image, rgb_shift, 0.1, **{"r_shift": 0.1, "g_shift": 0.1, "b_shift": 0.1}),
                         bboxes,
                     )
                 ),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
-                lambda: (random_function(image, channel_swap, 0.15), bboxes,),
+                lambda: (random_function(image, channel_swap, 0.1), bboxes,),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
@@ -62,23 +62,23 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
-                lambda: (random_function(image, channel_drop, 0.15), bboxes),
+                lambda: (random_function(image, channel_drop, 0.1), bboxes),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.MILD),
-                lambda: (tf.image.random_brightness(image, 0.25), bboxes),
+                lambda: (tf.image.random_brightness(image, 0.15), bboxes),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.MILD),
-                lambda: (tf.image.random_contrast(image, 0.75, 1.25), bboxes),
+                lambda: (tf.image.random_contrast(image, 0.9, 1.1), bboxes),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.MILD),
-                lambda: (tf.image.random_saturation(image, 0.75, 1.25), bboxes),
+                lambda: (tf.image.random_saturation(image, 0.9, 1.1), bboxes),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.MILD),
-                lambda: (tf.image.random_hue(image, 0.15), bboxes),
+                lambda: (tf.image.random_hue(image, 0.1), bboxes),
             ),
             (
                 tf.math.equal(augmentation_config.crop, True),
