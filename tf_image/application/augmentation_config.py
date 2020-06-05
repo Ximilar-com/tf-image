@@ -6,7 +6,7 @@ class ColorAugmentation(IntEnum):
     """
     Enum which splits color related operations into two groups:
     - MILD: brightness, contrast, hue, saturation and
-    - AGGRESSIVE: chanel swap, channel drop, gray scale.
+    - AGGRESSIVE: all from MILD and chanel swap, channel drop, gray scale.
 
     In addition, there is an option for no augmentations: ColorAugmentation.NONE.
     """

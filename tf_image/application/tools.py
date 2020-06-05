@@ -65,19 +65,19 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                 lambda: (random_function(image, channel_drop, 0.1), bboxes),
             ),
             (
-                tf.math.equal(augmentation_config.color, ColorAugmentation.MILD),
+                tf.math.greater_equal(augmentation_config.color, ColorAugmentation.MILD),
                 lambda: (tf.image.random_brightness(image, 0.15), bboxes),
             ),
             (
-                tf.math.equal(augmentation_config.color, ColorAugmentation.MILD),
+                tf.math.greater_equal(augmentation_config.color, ColorAugmentation.MILD),
                 lambda: (tf.image.random_contrast(image, 0.9, 1.1), bboxes),
             ),
             (
-                tf.math.equal(augmentation_config.color, ColorAugmentation.MILD),
+                tf.math.greater_equal(augmentation_config.color, ColorAugmentation.MILD),
                 lambda: (tf.image.random_saturation(image, 0.9, 1.1), bboxes),
             ),
             (
-                tf.math.equal(augmentation_config.color, ColorAugmentation.MILD),
+                tf.math.greater_equal(augmentation_config.color, ColorAugmentation.MILD),
                 lambda: (tf.image.random_hue(image, 0.1), bboxes),
             ),
             (
