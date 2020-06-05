@@ -1,5 +1,3 @@
-from PIL import Image
-import numpy as np
 import tensorflow as tf
 
 from tf_image.application.augmentation_config import AugmentationConfig
@@ -14,18 +12,26 @@ from tf_image.application.tools import random_augmentations
 config = AugmentationConfig()
 
 # Loads the image and creates bounding boxes for three completely visible apples.
-image = np.array(Image.open("images/ximilar-similar.jpg"))
-bboxes = np.array([[262.0, 135.0, 504.0, 371.0], [285.0, 446.0, 494.0, 644.0], [272.0, 688.0, 493.0, 895.0]])
-bboxes /= [image.shape[0], image.shape[1], image.shape[0], image.shape[1]]
+image_encoded = tf.io.read_file("images/ximilar-similar.jpg")
+image = tf.image.decode_jpeg(image_encoded)
+
+bboxes = tf.constant([[262.0, 135.0, 504.0, 371.0], [285.0, 446.0, 494.0, 644.0], [272.0, 688.0, 493.0, 895.0]])
+bboxes /= tf.cast(
+    tf.stack([tf.shape(image)[0], tf.shape(image)[1], tf.shape(image)[0], tf.shape(image)[1],]), tf.float32
+)
+bboxes_colors = [[0, 0, 255], [0, 0, 255], [0, 0, 255]]
 
 for i in range(3):
-    image_augmented = random_augmentations(np.copy(image), config)
-    image_augmented = Image.fromarray(image_augmented.numpy())
-    image_augmented.save(f"images/results/ximilar-similar_{i + 1}.png")
+    image_augmented = random_augmentations(image, config)
+
+    image_augmented_encoded = tf.image.encode_png(image_augmented)
+    tf.io.write_file(f"images/results/ximilar-similar_{i + 1}.png", image_augmented_encoded)
 
 for i in range(3):
-    image_augmented, bboxes_augmented = random_augmentations(np.copy(image), config, bboxes=bboxes)
-    image_augmented = tf.image.draw_bounding_boxes([image_augmented], [bboxes_augmented], [(0, 0, 255)] * len(bboxes))
-    image_augmented = tf.cast(image_augmented[0], dtype=tf.uint8).numpy()
-    image_augmented = Image.fromarray(image_augmented)
-    image_augmented.save(f"images/results/ximilar-similar_bboxes_{i + 1}.png")
+    image_augmented, bboxes_augmented = random_augmentations(image, config, bboxes=bboxes)
+
+    image_augmented = tf.image.draw_bounding_boxes([image_augmented], [bboxes_augmented], bboxes_colors)[0]
+    image_augmented = tf.cast(image_augmented, tf.uint8)  # for some reason, draw_bounding_boxes converts image to float
+
+    image_augmented_encoded = tf.image.encode_png(image_augmented)
+    tf.io.write_file(f"images/results/ximilar-similar_bboxes_{i + 1}.png", image_augmented_encoded)
