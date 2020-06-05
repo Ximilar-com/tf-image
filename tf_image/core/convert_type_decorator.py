@@ -23,8 +23,7 @@ def convert_type(function):
     @wraps(function)
     def wrap(image, *args, **kwargs):
         image_type = image.dtype
-        if not image_type == tf.float32:
-            image = tf.image.convert_image_dtype(image, tf.float32, saturate=True)
+        image = tf.image.convert_image_dtype(image, tf.float32)
 
         if len(args) >= 1:
             bboxes = args[0]
@@ -36,7 +35,7 @@ def convert_type(function):
             bboxes = tf.clip_by_value(bboxes, 0.0, 1.0)
 
             image, bboxes = function(image, bboxes, *args[1:], **kwargs)
-
+            image = tf.clip_by_value(image, 0.0, 1.0)
             image = tf.image.convert_image_dtype(image, image_type, saturate=True)
 
             bboxes = tf.clip_by_value(bboxes, 0.0, 1.0)
@@ -46,6 +45,7 @@ def convert_type(function):
             return image, bboxes
 
         image = function(image, **kwargs)
+        image = tf.clip_by_value(image, 0.0, 1.0)
         image = tf.image.convert_image_dtype(image, image_type, saturate=True)
         return image
 
