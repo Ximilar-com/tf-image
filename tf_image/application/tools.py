@@ -9,6 +9,7 @@ from tf_image.core.bboxes.rotate import rot90
 from tf_image.core.clip import clip_random
 from tf_image.core.colors import channel_drop, grayscale, channel_swap, rgb_shift
 from tf_image.core.convert_type_decorator import convert_type
+from tf_image.core.quality import gaussian_noise
 from tf_image.core.random import random_function
 
 
@@ -114,7 +115,7 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
             ),
             (
                 tf.math.equal(augmentation_config.quality, True),
-                lambda: (tf.image.random_jpeg_quality(image, 50, 98), bboxes),
+                lambda: (random_function(image, gaussian_noise, prob=0.5, stddev_max=0.05), bboxes),
             ),
             (
                 tf.math.equal(augmentation_config.erasing, True),
@@ -152,6 +153,13 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
             )
 
         return image, bboxes
+
+    # TODO we had some problems if random_jpeg_quality was inside the random operations ... find out why
+    image = tf.cond(
+        tf.math.equal(augmentation_config.quality, True),
+        lambda: tf.image.random_jpeg_quality(image, 20, 98),
+        lambda: image,
+    )
 
     # Randomize the sequence of augmentation indices.
     augmentation_count = 17
