@@ -10,7 +10,6 @@ def random_choice(x, size, axis=0):
     return sample
 
 
-@tf.function
 def random_function(image, function, prob, seed=None, **kwargs):
     with tf.name_scope("random_" + function.__name__):
         uniform_random = tf.random.uniform([], 0, 1.0, seed=seed)
@@ -19,7 +18,6 @@ def random_function(image, function, prob, seed=None, **kwargs):
     return result
 
 
-@tf.function
 def random_function_bboxes(image, bboxes, function, prob, seed=None, **kwargs):
     with tf.name_scope("random_" + function.__name__):
         uniform_random = tf.random.uniform([], 0, 1.0, seed=seed)

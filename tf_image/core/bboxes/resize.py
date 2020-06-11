@@ -4,9 +4,18 @@ from tf_image.core.convert_type_decorator import convert_type
 from tf_image.core.resize import random_resize_pad, random_resize
 
 
-@tf.function
 @convert_type
-def resize(image, bboxes, height, width, keep_aspect_ratio=False, random_method=True):
+@tf.function(
+    input_signature=[
+        tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),
+        tf.TensorSpec(shape=(None, 4), dtype=tf.float32),
+        tf.TensorSpec(shape=(), dtype=tf.int32),
+        tf.TensorSpec(shape=(), dtype=tf.int32),
+        tf.TensorSpec(shape=(), dtype=tf.bool),
+        tf.TensorSpec(shape=(), dtype=tf.bool),
+    ]
+)
+def resize(image, bboxes, height, width, keep_aspect_ratio=True, random_method=False):
     """
     Resize given image and bounding boxes.
 
