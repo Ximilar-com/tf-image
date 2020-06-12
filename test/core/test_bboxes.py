@@ -116,8 +116,9 @@ class TestResize(BboxTest):
         tf.debugging.assert_equal(tf.zeros([6, 2, 3]), image_resized[:, 4:, :], message="Padding should be here.")
         tf.debugging.assert_equal(tf.zeros([6, 2, 3]), image_resized[:, :2, :], message="Padding should be here.")
 
-        h, w = self.image.shape[0], self.image.shape[1]
-        tf.debugging.assert_equal(tf.constant([[0.25, 0.5, 0.75, 0.6]]), bboxes_resized)
+        tf.debugging.assert_equal(
+            tf.constant(tf.round(tf.constant([[0.25, 0.5, 0.75, 0.6]]) * 1000.0)), tf.round(bboxes_resized * 1000.0)
+        )
 
     def test_resize_not_keep_aspect_ratio(self):
         image_resized, bboxes_resized = resize(self.image, self.bboxes, 6, 6, keep_aspect_ratio=False)
