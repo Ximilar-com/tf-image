@@ -48,14 +48,14 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
                 lambda: (
                     (
-                        random_function(image, rgb_shift, 0.2, **{"r_shift": 0.1, "g_shift": 0.1, "b_shift": 0.1}),
+                        random_function(image, rgb_shift, 0.2, **{"r_shift": 0.15, "g_shift": 0.15, "b_shift": 0.15}),
                         bboxes,
                     )
                 ),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
-                lambda: (random_function(image, channel_swap, 0.15), bboxes,),
+                lambda: (random_function(image, channel_swap, 0.1), bboxes,),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
@@ -67,19 +67,19 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
             ),
             (
                 tf.math.greater_equal(augmentation_config.color, ColorAugmentation.MILD),
-                lambda: (tf.image.random_brightness(image, 0.25), bboxes),
+                lambda: (tf.image.random_brightness(image, 0.2), bboxes),
             ),
             (
                 tf.math.greater_equal(augmentation_config.color, ColorAugmentation.MILD),
-                lambda: (tf.image.random_contrast(image, 0.75, 1.25), bboxes),
+                lambda: (tf.image.random_contrast(image, 0.8, 1.2), bboxes),
             ),
             (
                 tf.math.greater_equal(augmentation_config.color, ColorAugmentation.MILD),
-                lambda: (tf.image.random_saturation(image, 0.75, 1.25), bboxes),
+                lambda: (tf.image.random_saturation(image, 0.8, 1.2), bboxes),
             ),
             (
                 tf.math.greater_equal(augmentation_config.color, ColorAugmentation.MILD),
-                lambda: (tf.image.random_hue(image, 0.25), bboxes),
+                lambda: (tf.image.random_hue(image, 0.2), bboxes),
             ),
             (
                 tf.math.equal(augmentation_config.crop, True),
@@ -95,10 +95,10 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                     image,
                     bboxes,
                     random_aspect_ratio_deformation,
-                    prob=0.7,
+                    prob=0.5,
                     unify_dims=False,
                     max_squeeze=0.6,
-                    max_stretch=1.7,
+                    max_stretch=1.3,
                 ),
             ),
             (
@@ -107,20 +107,20 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                     image,
                     bboxes,
                     random_aspect_ratio_deformation,
-                    prob=0.7,
+                    prob=0.5,
                     unify_dims=True,
                     max_squeeze=0.6,
-                    max_stretch=1.7,
+                    max_stretch=1.3,
                 ),
             ),
             (
                 tf.math.equal(augmentation_config.quality, True),
-                lambda: (random_function(image, gaussian_noise, prob=0.5, stddev_max=0.05), bboxes),
+                lambda: (random_function(image, gaussian_noise, prob=0.15, stddev_max=0.05), bboxes),
             ),
             (
                 tf.math.equal(augmentation_config.erasing, True),
                 lambda: multiple_erase(
-                    image, bboxes, iterations=10, max_area=calculate_bboxes_max_erase_area(bboxes, max_area=0.2)
+                    image, bboxes, iterations=7, max_area=calculate_bboxes_max_erase_area(bboxes, max_area=0.1)
                 ),
             ),
             (tf.math.equal(augmentation_config.rotate90, True), lambda: rot90(image, bboxes)),
@@ -157,7 +157,7 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
     # TODO we had some problems if random_jpeg_quality was inside the random operations ... find out why
     image = tf.cond(
         tf.math.equal(augmentation_config.quality, True),
-        lambda: tf.image.random_jpeg_quality(image, 20, 98),
+        lambda: tf.image.random_jpeg_quality(image, 35, 98),
         lambda: image,
     )
 
