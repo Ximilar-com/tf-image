@@ -173,7 +173,11 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
         condition,
         body,
         (i, image, bboxes),
-        shape_invariants=(i.get_shape(), tf.TensorShape([None, None, None]), bboxes.get_shape()),
+        shape_invariants=(
+            i.get_shape(),
+            tf.TensorShape([None, None, None]),
+            tf.TensorShape([None, 4]),
+        ),
     )
 
     # this ned to be at the end, otherwise we are not guaranteed to get the square

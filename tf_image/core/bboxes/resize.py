@@ -4,9 +4,18 @@ from tf_image.core.convert_type_decorator import convert_type
 from tf_image.core.resize import random_resize_pad, random_resize
 
 
-@tf.function
 @convert_type
-def resize(image, bboxes, height, width, keep_aspect_ratio=False, random_method=True):
+@tf.function(
+    input_signature=[
+        tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),
+        tf.TensorSpec(shape=(None, 4), dtype=tf.float32),
+        tf.TensorSpec(shape=(), dtype=tf.int32),
+        tf.TensorSpec(shape=(), dtype=tf.int32),
+        tf.TensorSpec(shape=(), dtype=tf.bool),
+        tf.TensorSpec(shape=(), dtype=tf.bool),
+    ]
+)
+def resize(image, bboxes, height, width, keep_aspect_ratio=True, random_method=False):
     """
     Resize given image and bounding boxes.
 
@@ -19,29 +28,39 @@ def resize(image, bboxes, height, width, keep_aspect_ratio=False, random_method=
     :return: (resized image, resized bounding boxes)
     """
     with tf.name_scope("resize"):
-        image_shape = tf.cast(tf.shape(image), tf.float32)
-        image_height, image_width = image_shape[0], image_shape[1]
 
-        if keep_aspect_ratio:
-            if random_method:
-                image = random_resize_pad(image, height, width)
-            else:
-                image = tf.image.resize_with_pad(image, height, width)
+        def _keep_aspect_ratio(img, boxes, h, w):
+            image_shape = tf.cast(tf.shape(img), tf.float32)
+            image_height, image_width = image_shape[0], image_shape[1]
 
-            height, width = tf.cast(height, dtype=tf.float32), tf.cast(width, dtype=tf.float32)
-            resize_coef = tf.math.minimum(height / image_height, width / image_width)
+            img = tf.cond(
+                random_method,
+                lambda: random_resize_pad(img, height, w),
+                lambda: tf.image.resize_with_pad(img, height, w),
+            )
+
+            h, w = tf.cast(h, dtype=tf.float32), tf.cast(w, dtype=tf.float32)
+            resize_coef = tf.math.minimum(h / image_height, w / image_width)
             resized_height, resized_width = image_height * resize_coef, image_width * resize_coef
-            pad_y, pad_x = (height - resized_height) / 2, (width - resized_width) / 2
-            bboxes = bboxes * tf.stack([resized_height, resized_width, resized_height, resized_width]) + tf.stack(
+            pad_y, pad_x = (h - resized_height) / 2, (w - resized_width) / 2
+            boxes = boxes * tf.stack([resized_height, resized_width, resized_height, resized_width]) + tf.stack(
                 [pad_y, pad_x, pad_y, pad_x,]
             )
 
-            bboxes /= tf.stack([height, width, height, width])
-        else:
-            if random_method:
-                image = random_resize(image, height, width)
-            else:
-                image = tf.image.resize(image, (height, width))
+            boxes /= tf.stack([h, w, h, w])
+
+            return img, boxes
+
+        def _dont_keep_aspect_ration(img, boxes, h, w):
+            img = tf.cond(random_method, lambda: random_resize(img, h, w), lambda: tf.image.resize(img, (h, w)),)
+
+            return img, boxes
+
+        image, bboxes = tf.cond(
+            keep_aspect_ratio,
+            lambda: _keep_aspect_ratio(image, bboxes, height, width),
+            lambda: _dont_keep_aspect_ration(image, bboxes, height, width),
+        )
     return image, bboxes
 
 
