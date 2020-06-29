@@ -5,12 +5,14 @@ from tf_image.core.bboxes.clip import clip_random_with_bboxes
 from tf_image.core.bboxes.erase import multiple_erase, calculate_bboxes_max_erase_area
 from tf_image.core.bboxes.flip import flip_left_right, flip_up_down
 from tf_image.core.bboxes.resize import random_aspect_ratio_deformation, random_pad_to_square
+from tf_image.core.bboxes.rotate import random_rotate
 from tf_image.core.bboxes.rotate import rot90
 from tf_image.core.clip import clip_random
 from tf_image.core.colors import channel_drop, grayscale, channel_swap, rgb_shift
 from tf_image.core.convert_type_decorator import convert_type
 from tf_image.core.quality import gaussian_noise
 from tf_image.core.random import random_function
+from tf_image.core.random import random_function_bboxes
 
 
 def random_augmentations(image, augmentation_config: AugmentationConfig, bboxes=None):
@@ -173,11 +175,7 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
         condition,
         body,
         (i, image, bboxes),
-        shape_invariants=(
-            i.get_shape(),
-            tf.TensorShape([None, None, None]),
-            tf.TensorShape([None, 4]),
-        ),
+        shape_invariants=(i.get_shape(), tf.TensorShape([None, None, None]), tf.TensorShape([None, 4]),),
     )
 
     # this ned to be at the end, otherwise we are not guaranteed to get the square
@@ -189,8 +187,3 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
     )
 
     return image, bboxes
-
-
-import tensorflow as tf
-from tf_image.core.bboxes.rotate import random_rotate
-from tf_image.core.random import random_function_bboxes
