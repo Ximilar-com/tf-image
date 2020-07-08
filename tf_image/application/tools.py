@@ -15,7 +15,7 @@ from tf_image.core.random import random_function
 from tf_image.core.random import random_function_bboxes
 
 
-def random_augmentations(image, augmentation_config: AugmentationConfig, bboxes=None):
+def random_augmentations(image, augmentation_config: AugmentationConfig, bboxes=None, prob_demanding_ops: float = 0.5):
     """
     Apply augmentations in random order.
 
@@ -24,6 +24,7 @@ def random_augmentations(image, augmentation_config: AugmentationConfig, bboxes=
     :param image: 3-D Tensor of shape (height, width, channels).
     :param augmentation_config: Config defining which augmentations can be applied.
     :param bboxes: 2-D Tensor of shape (box_number, 4) containing bounding boxes in format [ymin, xmin, ymin, xmax]
+    :param prob_demanding_ops: Probability that a time consuming operation (like rotation) will be performed.
     :return: augmented image or (augmented image, bboxes) if bboxes parameter is not None
     """
     has_bboxes = bboxes is not None
@@ -31,7 +32,7 @@ def random_augmentations(image, augmentation_config: AugmentationConfig, bboxes=
         bboxes = tf.reshape([], (0, 4))
 
     # convert_dtype decorator needs this special argument order (converting now saves us converting in each operation)
-    image, bboxes = _random_augmentations(image, bboxes, augmentation_config)
+    image, bboxes = _random_augmentations(image, bboxes, augmentation_config, prob_demanding_ops)
 
     if has_bboxes:
         return image, bboxes
@@ -41,7 +42,7 @@ def random_augmentations(image, augmentation_config: AugmentationConfig, bboxes=
 
 @tf.function
 @convert_type
-def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig):
+def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig, prob_demanding_ops: float):
     @tf.function
     def apply(idx, image, bboxes):
         # List of tuples (precondition, augmentation), augmentation will be applied only if precondition is True.
@@ -97,7 +98,7 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                     image,
                     bboxes,
                     random_aspect_ratio_deformation,
-                    prob=0.5,
+                    prob=prob_demanding_ops,
                     unify_dims=False,
                     max_squeeze=0.6,
                     max_stretch=1.3,
@@ -109,7 +110,7 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                     image,
                     bboxes,
                     random_aspect_ratio_deformation,
-                    prob=0.5,
+                    prob=prob_demanding_ops,
                     unify_dims=True,
                     max_squeeze=0.6,
                     max_stretch=1.3,
@@ -132,7 +133,7 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                     image,
                     bboxes,
                     random_rotate,
-                    prob=0.7,
+                    prob=prob_demanding_ops,
                     min_rotate=-augmentation_config.rotate_max,
                     max_rotate=augmentation_config.rotate_max,
                 ),
