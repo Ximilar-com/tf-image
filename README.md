@@ -1,4 +1,4 @@
-# tf-image 0.1.1
+# tf-image 0.1.2
 
 __tf-image__ implements methods for image augmentation for Tensorflow 2.+ / tf.data.Dataset.  
 
