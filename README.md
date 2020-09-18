@@ -1,4 +1,4 @@
-# tf-image 0.1.0
+# tf-image 0.1.1
 
 __tf-image__ implements methods for image augmentation for Tensorflow 2.+ / tf.data.Dataset.  
 
@@ -17,8 +17,11 @@ They have (at the moment) much more operations and options for image augmentatio
 
 ## Installation
 
-__tf-image__ is not available on PyPi right now. For installation, clone the repository 
-and install it from code (`pip install -e .`).
+Use pip:
+
+    pip install tf-image
+
+For installation from source code, clone the repository and install it from code (`pip install -e .`).
 There are no dependencies specified. You have to install TensorFlow 2+ and appropriate TensorFlow Addons.
 Specific version is on you, we wanted to keep this library as general as possible.
 
