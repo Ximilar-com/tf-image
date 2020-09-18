@@ -1,8 +1,11 @@
 from setuptools import setup, find_packages
 import os
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
-    name="tf_image",
+    name="tf-image",
     version="0.1.0",
     description="Image augmentation operations for TensorFlow 2+.",
     url="https://github.com/Ximilar-com/tf-image",
@@ -20,4 +23,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     namespace_packages=["tf_image"],
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 )
