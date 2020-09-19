@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="tf-image",
-    version="0.1.2",
+    version="0.1.3",
     description="Image augmentation operations for TensorFlow 2+.",
     url="https://github.com/Ximilar-com/tf-image",
     author="Ximilar.com Team, Michal Lukac, Libor Vanek, ...",
