@@ -5,15 +5,17 @@ from enum import IntEnum
 class ColorAugmentation(IntEnum):
     """
     Enum which splits color related operations into two groups:
-    - MILD: brightness, contrast, hue, saturation and
-    - AGGRESSIVE: all from MILD and chanel swap, channel drop, gray scale.
+    - LIGHT: brightness, contrast
+    - MEDIUM: LIGHT +  hue, saturation
+    - AGGRESSIVE: MEDIUM + channel swap, channel drop, gray scale.
 
     In addition, there is an option for no augmentations: ColorAugmentation.NONE.
     """
 
     NONE = 0
-    MILD = 1
-    AGGRESSIVE = 2
+    LIGHT = 1
+    MEDIUM = 2
+    AGGRESSIVE = 3
 
 
 class AspectRatioAugmentation(IntEnum):
