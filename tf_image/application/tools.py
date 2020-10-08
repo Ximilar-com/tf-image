@@ -94,7 +94,7 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                             image,
                             min_shape=(
                                 tf.cast(tf.cast(tf.shape(image)[0], dtype=tf.float32) * 0.9, dtype=tf.int32),
-                                tf.cast(tf.cast(tf.shape(image)[1], dtype=tf.float32) * 0.9, dtype=tf.int32)
+                                tf.cast(tf.cast(tf.shape(image)[1], dtype=tf.float32) * 0.9, dtype=tf.int32),
                             ),
                         ),
                         bboxes,
@@ -132,7 +132,10 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
             (
                 tf.math.equal(augmentation_config.erasing, True),
                 lambda: multiple_erase(
-                    image, bboxes, iterations=7, max_area=calculate_bboxes_max_erase_area(bboxes, max_area=0.1)
+                    image,
+                    bboxes,
+                    iterations=tf.random.uniform((), 0, 7, tf.int32),
+                    max_area=calculate_bboxes_max_erase_area(bboxes, max_area=0.1),
                 ),
             ),
             (tf.math.equal(augmentation_config.rotate90, True), lambda: rot90(image, bboxes)),
