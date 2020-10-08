@@ -89,7 +89,16 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
                 lambda: tf.cond(
                     tf.greater(tf.shape(bboxes)[0], 0),
                     lambda: clip_random_with_bboxes(image, bboxes),
-                    lambda: (clip_random(image, min_shape=(tf.shape(image)[0] // 2, tf.shape(image)[1] // 2)), bboxes),
+                    lambda: (
+                        clip_random(
+                            image,
+                            min_shape=(
+                                tf.cast(tf.cast(tf.shape(image)[0], dtype=tf.float32) * 0.9, dtype=tf.int32),
+                                tf.cast(tf.cast(tf.shape(image)[1], dtype=tf.float32) * 0.9, dtype=tf.int32)
+                            ),
+                        ),
+                        bboxes,
+                    ),
                 ),
             ),
             (
