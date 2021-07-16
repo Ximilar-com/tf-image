@@ -23,7 +23,7 @@ def resize(image, bboxes, height, width, keep_aspect_ratio=True, random_method=F
     :param bboxes: 2-D Tensor of shape (box_number, 4) containing bounding boxes in format [ymin, xmin, ymin, xmax]
     :param height: Height of the resized image.
     :param width: Width of the resized image.
-    :param keep_aspect_ratio: True if the coordinates are from 0 to 1. False if they use absolute images size.
+    :param keep_aspect_ratio: True if we should add padding instead to fully spreading out the image to given size
     :param random_method: Whether we should use random resize method (tf.image.ResizeMethod) or the default one.
     :return: (resized image, resized bounding boxes)
     """

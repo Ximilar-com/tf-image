@@ -5,8 +5,7 @@ from tf_image.core.bboxes.clip import clip_random_with_bboxes
 from tf_image.core.bboxes.erase import multiple_erase, calculate_bboxes_max_erase_area
 from tf_image.core.bboxes.flip import flip_left_right, flip_up_down
 from tf_image.core.bboxes.resize import random_aspect_ratio_deformation, random_pad_to_square
-from tf_image.core.bboxes.rotate import random_rotate
-from tf_image.core.bboxes.rotate import rot90
+from tf_image.core.bboxes.rotate import random_rotate, rot90, rot45
 from tf_image.core.clip import clip_random
 from tf_image.core.colors import channel_drop, grayscale, channel_swap, rgb_shift
 from tf_image.core.convert_type_decorator import convert_type
@@ -58,7 +57,10 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
-                lambda: (random_function(image, channel_swap, 0.1), bboxes,),
+                lambda: (
+                    random_function(image, channel_swap, 0.1),
+                    bboxes,
+                ),
             ),
             (
                 tf.math.equal(augmentation_config.color, ColorAugmentation.AGGRESSIVE),
@@ -140,6 +142,10 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
             ),
             (tf.math.equal(augmentation_config.rotate90, True), lambda: rot90(image, bboxes)),
             (
+                tf.math.equal(augmentation_config.rotate45, True),
+                lambda: (random_function_bboxes(image, bboxes, rot45, prob=0.5)),
+            ),
+            (
                 tf.math.greater(augmentation_config.rotate_max, 0),
                 lambda: random_function_bboxes(
                     image,
@@ -188,7 +194,11 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
         condition,
         body,
         (i, image, bboxes),
-        shape_invariants=(i.get_shape(), tf.TensorShape([None, None, None]), tf.TensorShape([None, 4]),),
+        shape_invariants=(
+            i.get_shape(),
+            tf.TensorShape([None, None, None]),
+            tf.TensorShape([None, 4]),
+        ),
     )
 
     # this ned to be at the end, otherwise we are not guaranteed to get the square
@@ -196,7 +206,10 @@ def _random_augmentations(image, bboxes, augmentation_config: AugmentationConfig
     image, bboxes = tf.cond(
         tf.math.equal(augmentation_config.padding_square, True),
         lambda: random_pad_to_square(image, bboxes),
-        lambda: (image, bboxes,),
+        lambda: (
+            image,
+            bboxes,
+        ),
     )
 
     return image, bboxes

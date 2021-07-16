@@ -41,9 +41,10 @@ class AugmentationConfig(object):
         self.color = ColorAugmentation.AGGRESSIVE
         self.crop = True
         self.distort_aspect_ratio = AspectRatioAugmentation.NORMAL
-        self.quality = True  # # jpeg quality, noise
+        self.quality = True  # jpeg quality, noise
         self.erasing = True
         self.rotate90 = False
+        self.rotate45 = False  # rotate 45 degrees clockwise (other multiples can be done by turning on rotate90)
         self.rotate_max = 13
         self.flip_vertical = True
         self.flip_horizontal = True
