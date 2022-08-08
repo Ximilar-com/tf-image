@@ -46,7 +46,7 @@ def _clip_random_with_bboxes(image, bboxes):
 
     # update
     image, bboxes = tf.cond(
-        tf.math.logical_or(tf.math.greater(new_height, 0), tf.math.greater(new_width, 0)),
+        tf.math.logical_and(tf.math.greater(new_height, 0), tf.math.greater(new_width, 0)),
         lambda: (tf.image.crop_to_bounding_box(image, *args_clip_image), clip_bboxes(bboxes, *args_clip_bboxes)),
         lambda: (image, bboxes),
     )
