@@ -43,6 +43,9 @@ def _clip_random_with_bboxes(image, bboxes):
         tf.cast(new_height * image_height, dtype=tf.int32),
         tf.cast(new_width * image_width, dtype=tf.int32),
     ]
+    
+    # Use int values for area measure
+    new_height, new_width = args_clip_image[2:]
 
     # update
     image, bboxes = tf.cond(
